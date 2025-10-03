@@ -52,19 +52,21 @@ namespace Grocery.Core.Services
         public List<BestSellingProducts> GetBestSellingProducts(int topX = 5)
         {
             //throw new NotImplementedException();
+            // Get all grocery list items each item = product purchased with quantity
             var items = _groceriesRepository.GetAll();
+            // Dictionary to count total sales per productId
             var productSales = new Dictionary<int, int>();
 
             // Count total sales per productId
             foreach (var item in items)
             {
-                if (!productSales.ContainsKey(item.ProductId))
-                    productSales[item.ProductId] = 0;
-
+                if (!productSales.ContainsKey(item.ProductId))          // Check if this ProductId is already in the dictionary.
+                    productSales[item.ProductId] = 0;                   // If not, initialize it with 0 sold items.
+                                                                        // Then add the current item's Amount to the total sold count.
                 productSales[item.ProductId] += item.Amount;
             }
 
-            // Build the BestSellingProducts list
+            // Build BestSellingProducts list looking up each product
             var bestSellers = new List<BestSellingProducts>(); 
             foreach (var kvp in productSales)
             {
@@ -84,7 +86,7 @@ namespace Grocery.Core.Services
                 .Take(topX)
                 .ToList();
 
-            // Add ranking
+            // Add ranking, assign ranking 1 = bestselling, 2 = second, best. en so on
             for (int i = 0; i < bestSellers.Count; i++)
             {
                 bestSellers[i].Ranking = i + 1;
