@@ -20,7 +20,45 @@ namespace Grocery.Core.Services
         }
         public List<BoughtProducts> Get(int? productId)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            // Return empty list if no productId was given
+            var result = new List<BoughtProducts>();
+            if (productId == null) return result;
+
+            // Load all clients, lists and items from repositories
+            var clients = _clientRepository.GetAll();
+            var groceryLists = _groceryListRepository.GetAll();
+            var items = _groceryListItemsRepository.GetAll();
+
+            // Loop through all grocery list items
+            foreach (var item in items)
+            {
+                // Only look at items that match the requested productId
+                if (item.ProductId == productId)
+                {
+                    // Get the product from repository
+                    var product = _productRepository.Get(item.ProductId);
+
+                    // Find the grocery list for this item
+                    var list = groceryLists.FirstOrDefault(l => l.Id == item.GroceryListId);
+
+                    // Find the client who owns this list
+                    var client = clients.FirstOrDefault(c => c.Id == list.ClientId);
+
+                    // If all three exist, add them to the result list
+                    if (product != null && list != null && client != null)
+                    {
+                        result.Add(new BoughtProducts
+                        {
+                            Client = client,
+                            GroceryList = list,
+                            Product = product
+                        });
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

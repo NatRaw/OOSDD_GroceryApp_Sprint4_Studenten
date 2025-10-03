@@ -6,6 +6,9 @@ namespace Grocery.Core.Models
         public Product Product { get; set; }
         public Client Client { get; set; }
         public GroceryList GroceryList { get; set; }
+        
+        public BoughtProducts() {} // empty constructor object initializer
+        
         public BoughtProducts(Client client, GroceryList groceryList, Product product)
         {
             Client = client;
